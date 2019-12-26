@@ -1,0 +1,4 @@
+.task {
+    cursor: pointer;
+    user-select: none;
+}
