@@ -2,16 +2,15 @@ import React from 'react';
 import Add from './AddComponent';
 import Tasks from './TasksList';
 import Filters from './FiltersComponent';
+import axios from 'axios';
+
+const baseUrl = 'http://192.168.43.179:8082/todos';
 
 class MainComponent extends React.Component {
 
     state = {
         newTask: '',
-        tasksList: [
-            {name: "Task1", finished: true},
-            {name: "Task2", finished: true},
-            {name: "Task3", finished: true},
-        ],
+        tasksList: [],
         filter: 'all',
         
 
@@ -21,26 +20,48 @@ class MainComponent extends React.Component {
         super(props);
     }
 
-    addTask = (task) => {
-        this.setState({newTask: task});
-        const newTask = {
-            name: task,
-            finished: false
-        }
+    componentDidMount() {
+        this.fetchData();
+    }
 
-        let newList = [...this.state.tasksList, newTask];
-        this.setState({tasksList: newList});
+    fetchData = () => {
+        
+        axios.get(baseUrl).then((ans) => {
+            this.setState({tasksList: ans.data})
+        })
         
     }
 
-    doneTask = (name) => {
-        let newList = [...this.state.tasksList]
-        for (let i=0; i< newList.length; i++) {
-            if (newList[i].name === name) {
-                newList[i].finished = !(newList[i].finished)
-            }
+    addTask = (task) => {
+        if (task === '') {
+            alert('Task Name Can Not Be Empty!');
         }
+        else {
+            this.setState({newTask: task});
+            const newTask = {
+                text: task,
+                done: false
+            }
+            axios.post(baseUrl, newTask).then(() => {
+                this.fetchData();
+            })
+            let newList = [...this.state.tasksList, newTask];
+            this.setState({tasksList: newList});
+            }
         
+    }
+
+    doneTask = (id) => {
+         let newList = [...this.state.tasksList]
+         for (let i=0; i< newList.length; i++) {
+             if (newList[i].id === id) {
+                 newList[i].done = !(newList[i].done)
+             }
+         }
+       
+        axios.put(`${baseUrl}/toggle/${id}`).then(() => {
+            this.fetchData();
+        })
         this.setState({tasksList: newList})
     }
 
@@ -57,7 +78,7 @@ class MainComponent extends React.Component {
             let todoList = []
             for (let j = 0; j< this.state.tasksList.length ; j++) {
                 
-                if (this.state.tasksList[j].finished !== true) {
+                if (this.state.tasksList[j].done !== true) {
                     todoList.push(this.state.tasksList[j])
                 }
             }
@@ -67,7 +88,7 @@ class MainComponent extends React.Component {
             let finishedList = []
             for (let j = 0; j< this.state.tasksList.length ; j++) {
                 
-                if (this.state.tasksList[j].finished === true) {
+                if (this.state.tasksList[j].done === true) {
                     finishedList.push(this.state.tasksList[j])
                 }
             }

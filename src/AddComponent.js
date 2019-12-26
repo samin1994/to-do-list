@@ -12,6 +12,7 @@ class AddComponent extends React.Component {
 
     clickHandler = () => {
         this.props.addTask(this.state.newTask)
+        this.setState({newTask: ''});
     }
 
     newTask = (event) => {

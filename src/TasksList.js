@@ -19,12 +19,12 @@ class TasksList extends React.Component {
 
     showItem = () => {
         
-        let result = this.props.tasksList.map((task, id) => {
-            if (task.finished === false) {
-                return <li className="task" onClick={() => this.doneHandler(task.name)} key={id}>{task.name}</li>
+        let result = this.props.tasksList.map((task) => {
+            if (task.done === false) {
+                return <li className="task" onClick={() => this.doneHandler(task.id)} key={task.id}>{task.text}</li>
             }
-            else if(task.finished === true) {
-                return <li className="task" onClick={() => this.doneHandler(task.name)} key={id}><strike>{task.name}</strike></li>
+            else if(task.done === true) {
+                return <li className="task" onClick={() => this.doneHandler(task.id)} key={task.id}><strike>{task.text}</strike></li>
             }
         })
 
